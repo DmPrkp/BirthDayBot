@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: db-maria
+    image: mariadb
+    restart: always
+    env_file: .env
+    ports:
+      - 3808:3808
+
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  web:
+    container_name: server
+    build: .
+    depends_on:
+      - db
+    ports:
+      - 3000:3000
