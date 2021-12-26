@@ -1,9 +1,9 @@
 {
    "type": "mysql",
-   "host": "dp",
+   "host": "bot",
    "port": 3808,
-   "username": "dp",
-   "password": "test-bot",
+   "username": "bot",
+   "password": "bot",
    "database": "bot",
    "synchronize": true,
    "logging": false,

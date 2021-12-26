@@ -47,8 +47,8 @@ const start = async () => {
     try {
         await server.listen(3000)
 
-        const address = server.server.address()
-        const port = typeof address === 'string' ? address : address?.port
+        // const address = server.server.address()
+        // const port = typeof address === 'string' ? address : address?.port
 
     } catch (err) {
         server.log.error(err)
