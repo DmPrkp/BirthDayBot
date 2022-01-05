@@ -1,25 +1,27 @@
 version: '3.8'
 
 services:
-  bot:
-    container_name: bot
-    image: mariadb
+  bot-db:
+    image: postgres:14.1-alpine
+    container_name: pgdb-bot
     restart: always
-    env_file: .env
+    environment:
+      POSTGRES_PASSWORD: bot
+      POSTGRES_DB: bot
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - 3808:3808
-
-  adminer:
-    container_name: adminer
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+      - 5432:5432
+    volumes:
+      - ./db:/var/lib/postgresql/data/pgdata
 
   web:
-    container_name: server
+    container_name: web-server
     build: .
     depends_on:
-      - db
+      - bot-db
+    environment:
+      PGHOST_DB: bot-db
     ports:
       - 3000:3000
+    # volumes:
+    #   - ./src/:/usr/src/app
