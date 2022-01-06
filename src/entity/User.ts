@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn} from "typeorm";
+import { Birthday } from "./Birthday";
 
 @Entity()
 export class User {
@@ -7,12 +8,14 @@ export class User {
     id: number;
 
     @Column()
-    firstName: string;
+    name: string;
 
     @Column()
-    lastName: string;
+    telegramId: number;
 
-    @Column()
-    age: number;
+    @OneToMany(() => Birthday, birthday => birthday.user, {
+        cascade: true,
+    })
+    birthdays: Birthday[];
 
 }
