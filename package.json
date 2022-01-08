@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "fastify": "^3.25.0",
+    "fastify-decorators": "^3.10.0",
     "fastify-plugin": "^3.0.0",
     "pg": "^8.7.1",
     "typeorm": "^0.2.41"

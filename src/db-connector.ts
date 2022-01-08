@@ -1,12 +1,10 @@
 import fastifyPlugin from 'fastify-plugin'
 import { createConnection, Connection, ConnectionOptions } from "typeorm";
-// import { FastifyInstance, RouteShorthandOptions, FastifyPluginCallback } from 'fastify'
-import { FastifyORMInterface } from './interfaces/typeOrmPlugin'
+import { FastifyORMInterface } from './interface/typeOrmPlugin'
 
 // type ORM 
 
-async function typeormConnector (fastify: FastifyORMInterface, options) {
-    console.log(options);    
+async function typeormConnector (fastify: FastifyORMInterface, options) {  
     try {
         let connection = await createConnection(options ? options : undefined)
         fastify

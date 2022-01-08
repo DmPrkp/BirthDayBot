@@ -1,13 +1,15 @@
 
 import { Birthday } from "./entity/Birthday";
 import { User } from "./entity/User";
-import Fastify, { FastifyInstance, RouteShorthandOptions } from 'fastify'
-import { Server, IncomingMessage, ServerResponse } from 'http'
+import Fastify, { RouteShorthandOptions } from 'fastify'
+import {FastifyORMInterface} from './interface/typeOrmPlugin'
+import { resolve } from 'path';
+// import { Server, IncomingMessage, ServerResponse } from 'http'
+import { bootstrap } from 'fastify-decorators';
 import dbConnector from './db-connector'
-const PGHOST_DB = process.env.PGHOST_DB
 const dbSettings = {
     type: "postgres",
-    host: PGHOST_DB,
+    host: process.env.PGHOST_DB,
     port: 5432,
     username: "postgres",
     password: "bot",
@@ -20,8 +22,15 @@ const dbSettings = {
 }
 
 
-const server: FastifyInstance = Fastify()
+const server: FastifyORMInterface = Fastify({logger: true})
 server.register(dbConnector, dbSettings)
+server.register(bootstrap, {
+    // Specify directory with our controllers
+    directory: resolve(__dirname, `controller`),
+  
+    // Specify mask to match only our controllers
+    mask: /\.controller\./,
+  });
 
 const opts: RouteShorthandOptions = {
     schema: {
@@ -38,12 +47,17 @@ const opts: RouteShorthandOptions = {
     }
 }
 
-server.get('/', opts, async (request, reply) => {
-    return { pong: 'it worked!' }
+server.get('/', opts, async (request, reply) => {    
+    if (server) {
+        const userRepository = await server.orm.getRepository(User);
+        const users = await userRepository.find({ relations: ["birthdays"] }); 
+        console.log("Loaded users: ", JSON.stringify(users));
+        return JSON.stringify(users)   
+    }
 })
 
-server.get('/ping', opts, async (request, reply) => {
-    return { pong: 'it worked!' }
+server.get('/ping', opts, async (request, reply) => {        
+   return { pong: 'it worked!' }
 })
 
 const start = async () => {

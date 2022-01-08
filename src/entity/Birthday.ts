@@ -13,6 +13,9 @@ export class Birthday {
     @Column()
     day: string;
 
+    @Column()
+    status: string;
+
     @ManyToOne(type => User, user => user.birthdays)
     user: User;
 

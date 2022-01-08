@@ -16,5 +16,5 @@ declare namespace fastifyTypeorm {
 declare const fastifyTypeorm: FastifyPluginCallback<fastifyTypeorm.FastifyTypeormOptions>;
 
 export interface FastifyORMInterface extends FastifyInstance {
-    orm: Connection & fastifyTypeorm.FastifyTypeormNestedObject;
+    orm?: Connection & fastifyTypeorm.FastifyTypeormNestedObject;
 }
