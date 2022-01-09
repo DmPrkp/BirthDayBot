@@ -6,14 +6,13 @@ import { FastifyORMInterface } from './interface/typeOrmPlugin'
 
 async function typeormConnector (fastify: FastifyORMInterface, options) {  
     try {
-        let connection = await createConnection(options ? options : undefined)
+        let connection : Connection = await createConnection(options)
         fastify
             .decorate('orm', connection)
             .addHook('onClose', async (instance: FastifyORMInterface, done) => {
                 await instance.orm.close()
                 done()
             })
-
     } catch (err) {
         console.error(err)
         throw err
