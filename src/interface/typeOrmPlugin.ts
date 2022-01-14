@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginCallback } from 'fastify'
-import { Connection, ConnectionOptions } from "typeorm";
+import { Connection, ConnectionOptions } from 'typeorm'
 
 declare namespace fastifyTypeorm {
     interface FastifyTypeormNestedObject {

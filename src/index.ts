@@ -2,10 +2,9 @@
 import { Birthday } from "./entity/Birthday";
 import { User } from "./entity/User";
 import Fastify, { RouteShorthandOptions } from 'fastify'
-import {FastifyORMInterface} from './interface/typeOrmPlugin'
+import { FastifyORMInterface } from './interface/typeOrmPlugin'
 import { resolve } from 'path';
-// import { Server, IncomingMessage, ServerResponse } from 'http'
-import { bootstrap } from 'fastify-decorators';
+// import { bootstrap } from 'fastify-decorators';
 import dbConnector from './db-connector'
 const PGHOST_DB: string = process.env.PGHOST_DB || 'localhost'
 const dbSettings = {
@@ -23,12 +22,17 @@ const dbSettings = {
 }
 
 
-const server: FastifyORMInterface = Fastify()
+const server: FastifyORMInterface = Fastify({
+    logger: true
+})
 server.register(dbConnector, dbSettings)
-server.register(bootstrap, {
-    directory: resolve(__dirname, `controller`),  
-    mask: /\.controller\./,
-  });
+server.register(require('fastify-autoroutes'), {dir: '../routes'})
+
+
+// server.register(bootstrap, {
+//     directory: resolve(__dirname, `controller`),
+//     mask: /\.controller\./,
+//   });
 
 const opts: RouteShorthandOptions = {
     schema: {

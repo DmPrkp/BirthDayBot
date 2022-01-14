@@ -12,14 +12,16 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./db:/var/lib/postgresql/data/pgdata
+      - ../fasti-db:/var/lib/postgresql/data/pgdata
 
-  # web:
-  #   container_name: web-server
-  #   build: .
-  #   depends_on:
-  #     - bot-db
-  #   environment:
-  #     PGHOST_DB: bot-db
-  #   ports:
-  #     - 3000:3000
+#  web:
+#   container_name: web-server
+#   build: .
+#   depends_on:
+#     - bot-db
+#   environment:
+#     PGHOST_DB: bot-db
+#   ports:
+#     - 3000:3000
+#   volumes:
+#   - ./:/usr/src/app
