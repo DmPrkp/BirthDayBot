@@ -5,7 +5,7 @@ import Fastify, { RouteShorthandOptions } from 'fastify'
 import { FastifyORMInterface } from './interface/typeOrmPlugin'
 import { resolve } from 'path';
 // import { bootstrap } from 'fastify-decorators';
-import dbConnector from './db-connector'
+import dbConnector from './plugin/db-connector'
 const PGHOST_DB: string = process.env.PGHOST_DB || 'localhost'
 const dbSettings = {
     type: "postgres",

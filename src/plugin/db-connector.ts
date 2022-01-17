@@ -1,10 +1,11 @@
 import fastifyPlugin from 'fastify-plugin'
-import { createConnection, Connection, ConnectionOptions } from "typeorm";
-import { FastifyORMInterface } from './interface/typeOrmPlugin'
+import { createConnection, Connection } from "typeorm";
+import { FastifyORMInterface } from '../interface/typeOrmPlugin'
+import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 // type ORM 
 
-async function typeormConnector (fastify: FastifyORMInterface, options) {  
+async function typeormConnector (fastify: FastifyORMInterface, options) {
     try {
         let connection : Connection = await createConnection(options)
         fastify
