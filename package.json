@@ -17,6 +17,7 @@
     "fastify": "^3.25.3",
     "fastify-autoroutes": "^2.0.0",
     "fastify-plugin": "^3.0.0",
+    "node-telegram-bot-api": "^0.56.0",
     "pg": "^8.7.1",
     "typeorm": "^0.2.41"
   },
