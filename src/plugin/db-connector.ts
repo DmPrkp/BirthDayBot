@@ -1,7 +1,7 @@
 import fastifyPlugin from 'fastify-plugin'
 import { createConnection, Connection } from "typeorm";
 import { FastifyORMInterface } from '../interface/typeOrmPlugin'
-import {MysqlConnectionOptions} from "typeorm/driver/mysql/MysqlConnectionOptions";
+import { MysqlConnectionOptions } from "typeorm/driver/mysql/MysqlConnectionOptions";
 
 // type ORM 
 

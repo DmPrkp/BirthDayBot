@@ -6,8 +6,6 @@ interface TelegramPoolingConnection {
     token: string,
 }
 
-// let token = '1823718690:AAHVu1ZMQWvXFC182G_e7K55yv7WjVpEgpQ'
-
 async function telegramPoolingConnection(fastify: FastifyInstance, options: TelegramPoolingConnection) {
 
     let { token } = options
