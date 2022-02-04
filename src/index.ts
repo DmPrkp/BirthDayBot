@@ -3,7 +3,7 @@ dotenv.config()
 import Fastify, { FastifyInstance, RouteShorthandOptions } from 'fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import  fastifyTelegram from './plugin/fastify-telegram'
-const TelegramBot = require('node-telegram-bot-api');
+// const TelegramBot = require('node-telegram-bot-api');
 
 
 const server: FastifyInstance = Fastify({})

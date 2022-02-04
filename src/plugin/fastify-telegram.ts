@@ -10,41 +10,60 @@ async function telegramPoolingConnection(fastify: FastifyInstance, options: Tele
 
     let { token } = options
 
-    // let body = JSON.stringify({params: { timeout: 20, offset: 883704840}})
-    let body = JSON.stringify({timeout: 10, offset: 883704844})
+    // let body = JSON.stringify({timeout: 10, offset: 883704862})
+    // let body = JSON.stringify({file_id: 'BQACAgIAAxkBAANUYf2GxgkJpBjdj74WNOF9-ZP8ClkAAsoaAALzWulLUicd5YrP8wYjBA'})
 
     let requestOptions = {
         hostname: `api.telegram.org`,
         method: 'POST',
         port: 443,
-        path: `/bot${token}/getUpdates`,
+        // path: `/bot${token}/getUpdates`,
+        // path: `/bot${token}/getFile`,
+        path: `/file/bot${token}/documents/file_0.png`,
         headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': body.length
+            // 'Content-Type': 'application/json',
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+            // 'Content-Length': body.length
         }
     }
 
+
+
     try {
 
-        let req = https.request(requestOptions, (res) => {
-            console.log(`STATUS: ${res.statusCode}`);
-            console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-            res.setEncoding('utf8');
-            res.on('data', (chunk) => {
-                console.log(`BODY: ${chunk}`);
-            });
-            res.on('end', () => {
-                console.log('No more data in response.');
-            });
-        })
+        let httpRequest = async (options) => {
+            let req = (options) => {
+                return new Promise<any>((resolve, rejects) => {
+                    let req = https.request(options, (res) => {
+                        let body: Array<any> = [];
 
-        req.on('error', error => {
-            console.error(error)
-        })
+                        res.on('data', (chunk) => {
+                            body.push(chunk)
+                        });
+                        res.on('end', () => {
+                            // @ts-ignore
+                            let bodySting : string = Buffer.concat(body).toString();
+                            // resolve(JSON.parse(bodySting))
+                            resolve(bodySting)
+                        });
+                    })
 
-        req.write(body);
-        req.end()
+                    req.on('error', error => {
+                        console.error(error)
+                        rejects(error)
+                    })
 
+                    // req.write(body);
+                    req.end()
+                })
+            }
+            const answer = await req(options);
+            return answer
+        }
+
+        let test : any = await httpRequest(requestOptions)
+        // console.log(test.result[0].message.document)
+        console.log(test)
     } catch (err) {
         console.error(err)
         throw err
