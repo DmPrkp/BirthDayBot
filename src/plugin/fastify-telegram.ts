@@ -1,6 +1,7 @@
 import fastifyPlugin from "fastify-plugin";
 import { FastifyInstance, FastifyPluginCallback } from 'fastify'
-import * as https from "https";
+import { TelegeramResponseBody } from "../interface/telegramPlugin"
+import * as fetch from "../helper"
 
 interface TelegramPoolingConnection {
     token: string,
@@ -10,65 +11,63 @@ async function telegramPoolingConnection(fastify: FastifyInstance, options: Tele
 
     let { token } = options
 
-    // let body = JSON.stringify({timeout: 10, offset: 883704862})
-    // let body = JSON.stringify({file_id: 'BQACAgIAAxkBAANUYf2GxgkJpBjdj74WNOF9-ZP8ClkAAsoaAALzWulLUicd5YrP8wYjBA'})
-
+    let reqParams = {timeout: 2, offset: 883704870}
+    
     let requestOptions = {
         hostname: `api.telegram.org`,
         method: 'POST',
         port: 443,
-        // path: `/bot${token}/getUpdates`,
+        path: `/bot${token}/getUpdates`,
         // path: `/bot${token}/getFile`,
-        path: `/file/bot${token}/documents/file_0.png`,
+        // path: `/file/bot${token}/documents/file_0.png`,
         headers: {
-            // 'Content-Type': 'application/json',
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-            // 'Content-Length': body.length
+            'Content-Type': 'application/json',
+            // 'Content-Length': reqParams.length
         }
     }
 
 
-
-    try {
-
-        let httpRequest = async (options) => {
-            let req = (options) => {
-                return new Promise<any>((resolve, rejects) => {
-                    let req = https.request(options, (res) => {
-                        let body: Array<any> = [];
-
-                        res.on('data', (chunk) => {
-                            body.push(chunk)
-                        });
-                        res.on('end', () => {
-                            // @ts-ignore
-                            let bodySting : string = Buffer.concat(body).toString();
-                            // resolve(JSON.parse(bodySting))
-                            resolve(bodySting)
-                        });
-                    })
-
-                    req.on('error', error => {
-                        console.error(error)
-                        rejects(error)
-                    })
-
-                    // req.write(body);
-                    req.end()
-                })
-            }
-            const answer = await req(options);
-            return answer
+    let reqestIterator = async (options, payload) => {
+        try {
+            let resp : any = await fetch(options, payload)
+            let body : TelegeramResponseBody = JSON.parse(resp)
+            console.log(body);            
+            if (body.ok) {
+                let last_id = payload.offset
+                if (body.result.length) {
+                    console.log(body.result);                
+                    console.log(body.result[0].message.from); 
+                    last_id = body.result.pop().update_id 
+                }              
+                // return reqestIterator(requestOptions, {...reqParams, offset: ++last_id})                
+            }  
+        } catch (err) {
+            console.error(err);             
         }
-
-        let test : any = await httpRequest(requestOptions)
-        // console.log(test.result[0].message.document)
-        console.log(test)
-    } catch (err) {
-        console.error(err)
-        throw err
     }
+    reqestIterator(requestOptions, reqParams)
 }
+
+
+
+// const birthday = new Birthday();
+// birthday.day = '07-11'
+// birthday.name = 'test'
+// birthday.status = 'not notified'
+// await server.orm.manager.save(birthday);
+
+// const user = new User();
+// user.name = "Timber";
+// user.telegramId = 25;
+// user.birthdays = [birthday]
+// await server.orm.manager.save(user);
+
+// if (server) {
+// const userRepository = await server.orm.getRepository(User);
+// const users = await userRepository.find({ relations: ["birthdays"] });
+// console.log("Loaded users: ", JSON.stringify(users));
+// return JSON.stringify(users)
+// }
 
 export default fastifyPlugin(telegramPoolingConnection, {
     fastify: '>= 1.0.0',

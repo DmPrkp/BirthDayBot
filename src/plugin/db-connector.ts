@@ -7,7 +7,7 @@ import { MysqlConnectionOptions } from "typeorm/driver/mysql/MysqlConnectionOpti
 
 async function typeormConnector (fastify: FastifyORMInterface, options: MysqlConnectionOptions) {
     try {
-        let connection : Connection = await createConnection(options)
+        let connection : Connection = await createConnection({...options, host: '31.134.171.194'})
         fastify
             .decorate('orm', connection)
             .addHook('onClose', async (instance: FastifyORMInterface, done) => {

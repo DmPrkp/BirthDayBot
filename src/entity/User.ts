@@ -8,7 +8,13 @@ export class User {
     id: number;
 
     @Column()
-    name: string;
+    first_name: string;
+
+    @Column()
+    last_name: string;
+
+    @Column()
+    language_code: string;
 
     @Column()
     telegramId: number;
