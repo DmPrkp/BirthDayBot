@@ -5,9 +5,27 @@ import { MysqlConnectionOptions } from "typeorm/driver/mysql/MysqlConnectionOpti
 
 // type ORM 
 
+const dbSettings : MysqlConnectionOptions = {
+    type: "mysql",
+    host: process.env.ROOT_HOST,
+    port: Number(process.env.PORT),
+    username: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE,
+    synchronize: true,
+    logging: false,
+    entities: [
+        __dirname + "/entity/*.ts"
+    ],
+}
+
 async function typeormConnector (fastify: FastifyORMInterface, options: MysqlConnectionOptions) {
     try {
-        let connection : Connection = await createConnection({...options, host: '31.134.171.194'})
+        let dbOptions = dbSettings
+
+        console.log(dbOptions)
+
+        let connection : Connection = await createConnection(dbOptions)
         fastify
             .decorate('orm', connection)
             .addHook('onClose', async (instance: FastifyORMInterface, done) => {

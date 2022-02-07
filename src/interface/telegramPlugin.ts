@@ -1,3 +1,8 @@
+export interface TelegramOptions {
+    token: string,
+    handler?: ([]) => void
+}
+
 export interface TelegeramMessageBody {
     message_id: number,
     from: {},

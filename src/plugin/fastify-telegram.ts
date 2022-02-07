@@ -1,17 +1,17 @@
 import fastifyPlugin from "fastify-plugin";
 import { FastifyInstance, FastifyPluginCallback } from 'fastify'
-import { TelegeramResponseBody } from "../interface/telegramPlugin"
+import { TelegeramResponseBody, TelegramOptions } from "../interface/telegramPlugin"
+import { FastifyBotControllerInterface } from "../interface/botControllerPlugin"
+import botController from "./bot-controller"
 import * as fetch from "../helper"
 
-interface TelegramPoolingConnection {
-    token: string,
-}
+async function telegramPoolingConnection(fastify: FastifyBotControllerInterface, options: TelegramOptions) {
 
-async function telegramPoolingConnection(fastify: FastifyInstance, options: TelegramPoolingConnection) {
+    fastify.register(botController)
 
     let { token } = options
 
-    let reqParams = {timeout: 2, offset: 883704870}
+    let reqParams = {timeout: 10, offset: 883704870}
     
     let requestOptions = {
         hostname: `api.telegram.org`,
@@ -27,25 +27,24 @@ async function telegramPoolingConnection(fastify: FastifyInstance, options: Tele
     }
 
 
-    let reqestIterator = async (options, payload) => {
+    let requestIterator = async (options, payload) => {
         try {
             let resp : any = await fetch(options, payload)
             let body : TelegeramResponseBody = JSON.parse(resp)
-            console.log(body);            
             if (body.ok) {
                 let last_id = payload.offset
                 if (body.result.length) {
-                    console.log(body.result);                
-                    console.log(body.result[0].message.from); 
+                    console.log(body.result[0].message.from);
+                    await fastify.botController(body)
                     last_id = body.result.pop().update_id 
                 }              
                 // return reqestIterator(requestOptions, {...reqParams, offset: ++last_id})                
-            }  
+            }
         } catch (err) {
             console.error(err);             
         }
     }
-    reqestIterator(requestOptions, reqParams)
+    requestIterator(requestOptions, reqParams)
 }
 
 
