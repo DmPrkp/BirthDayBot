@@ -3,9 +3,17 @@ export interface TelegramOptions {
     handler?: ([]) => void
 }
 
+export interface FromObject {
+    id: number,
+    is_bot: boolean,
+    first_name: string,
+    last_name: string,
+    language_code: string
+}
+
 export interface TelegeramMessageBody {
     message_id: number,
-    from: {},
+    from: FromObject,
     chat: {},
     date: number,
     text: string

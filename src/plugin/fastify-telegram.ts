@@ -11,7 +11,7 @@ async function telegramPoolingConnection(fastify: FastifyBotControllerInterface,
 
     let { token } = options
 
-    let reqParams = {timeout: 10, offset: 883704870}
+    let reqParams = {timeout: 10, offset: 883704873}
     
     let requestOptions = {
         hostname: `api.telegram.org`,
@@ -34,8 +34,8 @@ async function telegramPoolingConnection(fastify: FastifyBotControllerInterface,
             if (body.ok) {
                 let last_id = payload.offset
                 if (body.result.length) {
-                    console.log(body.result[0].message.from);
-                    await fastify.botController(body)
+                    // console.log('telegram.message.from', body.result[0].message.from);
+                    await fastify.botController(body.result)
                     last_id = body.result.pop().update_id 
                 }              
                 // return reqestIterator(requestOptions, {...reqParams, offset: ++last_id})                

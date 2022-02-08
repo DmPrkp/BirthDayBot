@@ -6,7 +6,7 @@ import dbConnector from './plugin/db-connector'
 
 const fastify: any = Fastify({logger: true})
 
-if (process.env.USER && process.env.PASSWORD && process.env.ROOT_HOST) {
+if (process.env.DB_USER && process.env.PASSWORD && process.env.ROOT_HOST) {
     fastify.register(dbConnector)
 }
 
