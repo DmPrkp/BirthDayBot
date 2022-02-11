@@ -1,41 +1,26 @@
 import fastifyPlugin from "fastify-plugin";
-import { TelegeramResponseBody, TelegramOptions } from "../interface/telegramPlugin"
 import { FastifyBotControllerInterface } from "../interface/botControllerPlugin"
 import botController from "./bot-controller"
-import * as fetch from "../helper"
+import telegramFetch from "../services/telegram-fetch"
 
-async function telegramPoolingConnection(fastify: FastifyBotControllerInterface, options: TelegramOptions) {
+async function telegramPoolingConnection(fastify: FastifyBotControllerInterface) {
 
     fastify.register(botController)
 
-    let { token } = options
-
-    let reqParams = {timeout: 10, offset: 883704873}
-    
-    let requestOptions = {
-        hostname: `api.telegram.org`,
-        method: 'POST',
-        port: 443,
-        path: `/bot${token}/getUpdates`,
-        // path: `/bot${token}/getFile`,
-        // path: `/file/bot${token}/documents/file_0.png`,
-        headers: {
-            'Content-Type': 'application/json',
-            // 'Content-Length': reqParams.length
-        }
+    let reqOptions = {
+        method: 'getUpdates',
+        params: {timeout: 10, offset: 883704873}
     }
 
-
-    let requestIterator = async (options, payload) => {
+    let requestIterator = async (options) => {
         try {
-            let resp : any = await fetch(options, payload)
-            let body : TelegeramResponseBody = JSON.parse(resp)
-            if (body.ok) {
-                let last_id = payload.offset
-                if (body.result.length) {
+            let resp : any = await telegramFetch(options)
+            if (resp.ok) {
+                let last_id = resp.offset
+                if (resp.result.length) {
                     // console.log('telegram.message.from', body.result[0].message.from);
-                    await fastify.botController(body.result)
-                    last_id = body.result.pop().update_id 
+                    await fastify.botController(resp.result)
+                    last_id = resp.result.pop().update_id
                 }              
                 // return reqestIterator(requestOptions, {...reqParams, offset: ++last_id})                
             }
@@ -43,7 +28,7 @@ async function telegramPoolingConnection(fastify: FastifyBotControllerInterface,
             console.error(err);             
         }
     }
-    requestIterator(requestOptions, reqParams)
+    requestIterator(reqOptions)
 }
 
 

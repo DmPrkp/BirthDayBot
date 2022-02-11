@@ -1,6 +1,6 @@
 export interface TelegramOptions {
-    token: string,
-    handler?: ([]) => void
+    method: string
+    params: {}
 }
 
 export interface FromObject {

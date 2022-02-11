@@ -1,7 +1,7 @@
 import * as https from "https";
 
 // fetch-like request
-let httpReqest = async (options, payload) => {
+let httpFetchRequest = async (options, payload) => {
     try {
         let reqBody = JSON.stringify(payload)
         let req = (options, payload) => {
@@ -34,4 +34,4 @@ let httpReqest = async (options, payload) => {
     }
 }
 
-export = httpReqest
+export default httpFetchRequest

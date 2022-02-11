@@ -3,6 +3,8 @@ import { FastifyORMInterface } from '../interface/typeOrmPlugin'
 import { TelegeramResultArray, FromObject }from '../interface/telegramPlugin'
 import { Birthday } from "../entity/Birthday";
 import { User } from "../entity/User";
+import telegramFetch from "../services/telegram-fetch";
+import {monitorEventLoopDelay} from "perf_hooks";
 
 async function saveUser(fastify: FastifyORMInterface, user: FromObject) {
     let newUser = new User();
@@ -19,23 +21,42 @@ async function botController(fastify: FastifyORMInterface, options: object, done
         const userRepository = await fastify.orm.getRepository(User);
 
         for (const item of body) {
-            console.log(item.message)
-            console.log(item)
             let telegramUser = item.message.from
             const user = await userRepository.findOne({telegramId: telegramUser.id});
-
             if (!user) {
                 telegramUser = await saveUser(fastify, telegramUser)
             }
-            const dbUser = await userRepository.find();
-            console.log("Loaded users: ", JSON.stringify(dbUser));
-            let massage = item.message.text
+            // const dbUser = await userRepository.find();
+            // console.log("Loaded users: ", JSON.stringify(dbUser));
+            let massage = item.message.text.split(' ')
+            let route = massage.shift()
 
-            console.log(massage.split(' '));
+            if (route === '/start') {
+                let params = {
+                    chat_id: 1062015030,
+                    text: 'initial options'
+                }
+                await telegramFetch({method: "sendMessage", params})
+            }
+            if (route === '/set') {
+
+            }
+            if (route === '/get') {
+                if (massage[0] === 'all') {
+                    const users = await userRepository.find({ relations: ["birthdays"] });
+                }
+                if (massage[0] && Number(massage[0]).constructor === Number) {
+                    console.log('get 1')
+                }
+            }
+            if (route === '/set') {
+                console.log(route, massage)
+            }
+            if (route === '/delete') {
+                console.log(route, massage)
+            }
         }
 
-
-        // const users = await userRepository.find({ relations: ["birthdays"] });
 
 
 
