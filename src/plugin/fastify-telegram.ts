@@ -1,5 +1,4 @@
 import fastifyPlugin from "fastify-plugin";
-import { FastifyInstance, FastifyPluginCallback } from 'fastify'
 import { TelegeramResponseBody, TelegramOptions } from "../interface/telegramPlugin"
 import { FastifyBotControllerInterface } from "../interface/botControllerPlugin"
 import botController from "./bot-controller"
