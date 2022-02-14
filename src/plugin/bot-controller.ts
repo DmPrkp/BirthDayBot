@@ -1,24 +1,36 @@
 import fastifyPlugin from "fastify-plugin";
-import { FastifyORMInterface } from '../interface/typeOrmPlugin'
-import { TelegeramResultArray, FromObject }from '../interface/telegramPlugin'
+import { FastifyORMInterface, birthDayInterface } from '../interface/typeOrmPlugin'
+import { TelegramResultArray, FromObject }from '../interface/telegramPlugin'
 import { Birthday } from "../entity/Birthday";
 import { User } from "../entity/User";
 import telegramFetch from "../services/telegram-fetch";
-import {monitorEventLoopDelay} from "perf_hooks";
+
+function newEntityCreator(entity, val) {
+    for (const key of Object.keys(val)) {
+        (key === 'id') ? entity.telegramId = val[key] : entity[key] = val[key];
+    }
+    return entity
+}
 
 async function saveUser(fastify: FastifyORMInterface, user: FromObject) {
     let newUser = new User();
-    for (const key of Object.keys(user)) {
-        (key === 'id') ? newUser.telegramId = user[key] : newUser[key] = user[key];
-    }
+    newUser = newEntityCreator(newUser, user)
     await fastify.orm.manager.save(newUser);
     return newUser
 }
 
-async function botController(fastify: FastifyORMInterface, options: object, done: any) {
-    let botController = async (body: TelegeramResultArray) => {
+async function saveBirthDay(fastify: FastifyORMInterface, birthDay: birthDayInterface) {
+    console.log(birthDay)
+    let newBirthday = new Birthday();
+    newBirthday = newEntityCreator(newBirthday, birthDay)
+    await fastify.orm.manager.save(newBirthday);
+}
 
+async function botControllerPlugin(fastify: FastifyORMInterface, options: TelegramResultArray, done: any) {
+
+    let botController = async (body: TelegramResultArray) => {
         const userRepository = await fastify.orm.getRepository(User);
+        const birthdayRepository = await fastify.orm.getRepository(Birthday);
 
         for (const item of body) {
             let telegramUser = item.message.from
@@ -26,8 +38,7 @@ async function botController(fastify: FastifyORMInterface, options: object, done
             if (!user) {
                 telegramUser = await saveUser(fastify, telegramUser)
             }
-            // const dbUser = await userRepository.find();
-            // console.log("Loaded users: ", JSON.stringify(dbUser));
+            console.log(item)
             let massage = item.message.text.split(' ')
             let route = massage.shift()
 
@@ -38,36 +49,39 @@ async function botController(fastify: FastifyORMInterface, options: object, done
                 }
                 await telegramFetch({method: "sendMessage", params})
             }
-            if (route === '/set') {
 
+            if (route === '/set' && massage) {
+                let [day, month] = massage.pop().split('.')
+                let birthday = {
+                    user,
+                    day: Number(day),
+                    month: Number(month),
+                    name: massage.join(' '),
+                    status: 'not congratulate'
+                }
+                await saveBirthDay(fastify, birthday)
             }
+
             if (route === '/get') {
                 if (massage[0] === 'all') {
-                    const users = await userRepository.find({ relations: ["birthdays"] });
+                    const birthday = await userRepository.find({ relations: ["birthday"] });
+                    console.log('birthday', birthday)
                 }
                 if (massage[0] && Number(massage[0]).constructor === Number) {
                     console.log('get 1')
                 }
             }
-            if (route === '/set') {
-                console.log(route, massage)
-            }
+
             if (route === '/delete') {
                 console.log(route, massage)
             }
         }
-
-
-
-
-
-
-    }
-    fastify.decorate("botController", botController)
+     }
+    fastify.decorate("bot", botController)
     done()
 }
 
-export default fastifyPlugin(botController, {
+export default fastifyPlugin(botControllerPlugin, {
     fastify: '>=1.0.0',
     name: 'fastify-bot-controller'
 })

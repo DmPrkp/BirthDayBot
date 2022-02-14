@@ -11,7 +11,7 @@ export interface FromObject {
     language_code: string
 }
 
-export interface TelegeramMessageBody {
+export interface TelegramMessageBody {
     message_id: number,
     from: FromObject,
     chat: {},
@@ -19,15 +19,15 @@ export interface TelegeramMessageBody {
     text: string
 }
 
-export interface TelegeramMessage {
+export interface TelegramMessage {
     update_id: number,
-    message: TelegeramMessageBody
+    message?: TelegramMessageBody
 }
 
-export interface TelegeramResultArray extends Array<TelegeramMessage> {}
+export interface TelegramResultArray extends Array<TelegramMessage> {}
 
-export interface TelegeramResponseBody {
+export interface TelegramResponseBody {
     ok: boolean;
-    result : TelegeramResultArray
+    result: TelegramResultArray
 }
 

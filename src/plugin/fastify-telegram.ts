@@ -1,34 +1,38 @@
 import fastifyPlugin from "fastify-plugin";
 import { FastifyBotControllerInterface } from "../interface/botControllerPlugin"
+import { TelegramResponseBody, TelegramResultArray, TelegramMessage } from '../interface/telegramPlugin'
 import botController from "./bot-controller"
 import telegramFetch from "../services/telegram-fetch"
 
 async function telegramPoolingConnection(fastify: FastifyBotControllerInterface) {
 
-    fastify.register(botController)
+    await fastify.register(botController)
 
     let reqOptions = {
         method: 'getUpdates',
-        params: {timeout: 10, offset: 883704873}
+        params: {timeout: 10, offset: 883704889}
     }
 
     let requestIterator = async (options) => {
+        let resp : TelegramResponseBody;
+        let offset: number;
         try {
-            let resp : any = await telegramFetch(options)
-            if (resp.ok) {
-                let last_id = resp.offset
-                if (resp.result.length) {
-                    // console.log('telegram.message.from', body.result[0].message.from);
-                    await fastify.botController(resp.result)
-                    last_id = resp.result.pop().update_id
-                }              
-                // return reqestIterator(requestOptions, {...reqParams, offset: ++last_id})                
+            resp = await telegramFetch(options)
+            if (resp.ok && resp.result && resp.result.length) {
+                await fastify.bot(resp.result)
             }
         } catch (err) {
-            console.error(err);             
+            console.error(err);
         }
+        let result : TelegramResultArray = resp.result;
+        let lastMessage : TelegramMessage = (result) ? result.pop() : { update_id: options.params.offset }
+        offset = lastMessage.update_id
+        reqOptions.params.offset = offset + 1
+        console.log(reqOptions.params)
+        return await requestIterator(reqOptions)
     }
-    requestIterator(reqOptions)
+    await requestIterator(reqOptions)
+
 }
 
 

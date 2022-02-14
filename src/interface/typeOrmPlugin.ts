@@ -18,3 +18,10 @@ declare const fastifyTypeorm: FastifyPluginCallback<fastifyTypeorm.FastifyTypeor
 export interface FastifyORMInterface extends FastifyInstance {
     orm?: Connection & fastifyTypeorm.FastifyTypeormNestedObject;
 }
+
+export interface birthDayInterface {
+    name: string,
+    day: number,
+    month: number,
+    user: {}
+}

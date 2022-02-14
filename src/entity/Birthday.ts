@@ -11,7 +11,10 @@ export class Birthday {
     name: string;
 
     @Column()
-    day: string;
+    day: number;
+
+    @Column()
+    month: number;
 
     @Column()
     status: string;

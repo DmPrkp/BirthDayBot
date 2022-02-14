@@ -10,9 +10,9 @@ if (process.env.DB_USER && process.env.PASSWORD && process.env.ROOT_HOST) {
     fastify.register(dbConnector)
 }
 
-let token : string | undefined = process.env.TELEGRAMM_TOKEN;
+let token : string | undefined = process.env.TELEGRAM_TOKEN;
 
-(token) ? fastify.register(fastifyTelegram) : console.error('add env var TELEGRAMM_TOKEN!');
+(token) ? fastify.register(fastifyTelegram) : console.error('add env var TELEGRAM_TOKEN!');
 
 const start = async () => {
     try {

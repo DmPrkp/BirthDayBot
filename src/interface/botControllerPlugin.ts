@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
-import {TelegeramResponseBody, TelegeramResultArray} from './telegramPlugin'
+import { TelegramResultArray } from './telegramPlugin'
 
 export interface FastifyBotControllerInterface extends FastifyInstance {
-    botController?: (body:TelegeramResultArray)=>{};
+    bot?: (body:TelegramResultArray)=>{};
 }

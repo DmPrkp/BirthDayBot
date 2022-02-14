@@ -1,8 +1,8 @@
-import {TelegeramResponseBody, TelegramOptions} from "../interface/telegramPlugin";
+import { TelegramResponseBody, TelegramOptions } from "../interface/telegramPlugin";
 import httpFetchRequest from "./helpers";
 
 async function telegramFetch(options: TelegramOptions) {
-    let token = process.env.TELEGRAMM_TOKEN
+    let token = process.env.TELEGRAM_TOKEN
     let { method, params } = options
     // getUpdates
     // let reqParams =
@@ -22,7 +22,7 @@ async function telegramFetch(options: TelegramOptions) {
 
     try {
         let resp : any = await httpFetchRequest(requestOptions, params)
-        let body : TelegeramResponseBody = JSON.parse(resp)
+        let body : TelegramResponseBody = JSON.parse(resp)
         return body
     } catch (err) {
         console.error(err);
