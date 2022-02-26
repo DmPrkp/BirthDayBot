@@ -20,7 +20,6 @@ async function saveUser(fastify: FastifyORMInterface, user: FromObject) {
 }
 
 async function saveBirthDay(fastify: FastifyORMInterface, birthDay: birthDayInterface) {
-    console.log(birthDay)
     let newBirthday = new Birthday();
     newBirthday = newEntityCreator(newBirthday, birthDay)
     await fastify.orm.manager.save(newBirthday);
@@ -64,10 +63,13 @@ async function botControllerPlugin(fastify: FastifyORMInterface, options: Telegr
             }
 
             if (route === '/get') {
-                if (massage[0] === 'all') {
-                    console.log('user', user);                    
+                if (massage[0] === 'all') {                 
                     const { birthdays } = await userRepository.findOne(user.id, {relations: ["birthdays"]});
-                    console.log('birthday', birthdays)
+                    let params = {
+                        chat_id: 1062015030,
+                        text: (birthdays.map(el => `${el.id} ${el.name} ${el.day}.${el.month}`)).join('\n')
+                    }
+                    await telegramFetch({method: "sendMessage", params})
                 }
                 if (massage[0] && Number(massage[0]).constructor === Number) {
                     console.log('get 1')
@@ -75,7 +77,17 @@ async function botControllerPlugin(fastify: FastifyORMInterface, options: Telegr
             }
 
             if (route === '/delete') {
-                console.log(route, massage)
+                if (massage[0] && Number(massage[0]).constructor === Number) {
+                    try {
+                        birthdayRepository.delete(Number(massage[0]))
+                        let params = {
+                            chat_id: 1062015030,
+                            text: `item ${massage[0]} is deleted`
+                        }
+                        await telegramFetch({method: "sendMessage", params})  
+                    } catch(e) {console.error(e)}
+             
+                }
             }
         }
      }
