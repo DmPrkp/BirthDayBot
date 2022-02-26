@@ -3,9 +3,8 @@ import httpFetchRequest from "./helpers";
 
 async function telegramFetch(options: TelegramOptions) {
     let token = process.env.TELEGRAM_TOKEN
+    if (!token) throw new Error('NO TOKEN')
     let { method, params } = options
-    // getUpdates
-    // let reqParams =
 
     let requestOptions = {
         hostname: `api.telegram.org`,

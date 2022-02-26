@@ -30,6 +30,7 @@ async function typeormConnector (fastify: FastifyORMInterface, options: MysqlCon
         let dbOptions = (options && options.password) ? options : dbSettings
 
         let connection : Connection = await createConnection(dbOptions)
+        
         fastify
             .decorate('orm', connection)
             .addHook('onClose', async (instance: FastifyORMInterface, done) => {

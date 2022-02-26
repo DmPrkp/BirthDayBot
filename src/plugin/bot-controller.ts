@@ -29,6 +29,7 @@ async function saveBirthDay(fastify: FastifyORMInterface, birthDay: birthDayInte
 async function botControllerPlugin(fastify: FastifyORMInterface, options: TelegramResultArray, done: any) {
 
     let botController = async (body: TelegramResultArray) => {
+        
         const userRepository = await fastify.orm.getRepository(User);
         const birthdayRepository = await fastify.orm.getRepository(Birthday);
 
@@ -64,8 +65,9 @@ async function botControllerPlugin(fastify: FastifyORMInterface, options: Telegr
 
             if (route === '/get') {
                 if (massage[0] === 'all') {
-                    const birthday = await userRepository.find({ relations: ["birthday"] });
-                    console.log('birthday', birthday)
+                    console.log('user', user);                    
+                    const { birthdays } = await userRepository.findOne(user.id, {relations: ["birthdays"]});
+                    console.log('birthday', birthdays)
                 }
                 if (massage[0] && Number(massage[0]).constructor === Number) {
                     console.log('get 1')

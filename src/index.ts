@@ -10,14 +10,11 @@ import botController from "./plugin/bot-controller";
 
 const fastify: FastifyBotControllerInterface = Fastify({logger: true})
 
+// console.log('process.env', process.env.DB_USER, process.env.PASSWORD, process.env.ROOT_HOST);
 if (process.env.DB_USER && process.env.PASSWORD && process.env.ROOT_HOST) {
+
     fastify.register(dbConnector)
 }
-
-// let token : string | undefined = process.env.TELEGRAM_TOKEN;
-
-// (token) ? fastify.register(fastifyTelegram) : console.error('add env var TELEGRAM_TOKEN!');
-
 fastify.register(botController)
 
 const start = async () => {
@@ -32,12 +29,11 @@ const start = async () => {
 
     let reqOptions = {
         method: 'getUpdates',
-        params: {timeout: 10, offset: 0}
+        params: {timeout: 5, offset: 1}
     }
 
     let requestIterator = async (options) => {
-        let resp : TelegramResponseBody;
-        let offset: number;
+        let resp : TelegramResponseBody;   
         try {
             resp = await telegramFetch(options)
             if (resp.ok && resp.result && resp.result.length) {
@@ -45,14 +41,17 @@ const start = async () => {
             }
         } catch (err) {
             console.error(err);
-        }
-        let result : TelegramResultArray = resp.result;
-        console.log("result", result)
-        let lastMessage : TelegramMessage = (result.length) ? result.pop() : { update_id: options.params.offset }
-        offset = lastMessage.update_id
-        console.log('offset', offset)
-        reqOptions.params.offset = offset
-        console.log(reqOptions.params)
+        } 
+        
+        let { result } = resp;
+        let lastMessage : TelegramMessage 
+        if (result && result.length) {         
+           lastMessage = result.pop()  
+           lastMessage.update_id = lastMessage.update_id + 1
+        } else {
+            lastMessage = { update_id: options.params.offset } 
+        }        
+        reqOptions.params.offset = lastMessage.update_id   
         return await requestIterator(reqOptions)
     }
     await requestIterator(reqOptions)

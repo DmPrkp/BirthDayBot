@@ -28,6 +28,6 @@ export interface TelegramResultArray extends Array<TelegramMessage> {}
 
 export interface TelegramResponseBody {
     ok: boolean;
-    result: TelegramResultArray
+    result?: TelegramResultArray
 }
 
