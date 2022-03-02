@@ -3,7 +3,7 @@ import { FastifyORMInterface, birthDayInterface } from '../interface/typeOrmPlug
 import { TelegramResultArray, FromObject }from '../interface/telegramPlugin'
 import { Birthday } from "../entity/Birthday";
 import { User } from "../entity/User";
-import telegramFetch from "../services/telegram-fetch";
+import telegramFetch from "../helpers/telegram-fetch";
 
 function newEntityCreator(entity, val) {
     for (const key of Object.keys(val)) {

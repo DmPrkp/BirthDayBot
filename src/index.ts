@@ -5,7 +5,8 @@ import Fastify, { FastifyInstance, RouteShorthandOptions } from 'fastify'
 import {FastifyBotControllerInterface} from './interface/botControllerPlugin'
 import dbConnector from './plugin/db-connector'
 import {TelegramMessage, TelegramResponseBody, TelegramResultArray} from "./interface/telegramPlugin";
-import telegramFetch from "./services/telegram-fetch";
+import requestIterator from "./service/requestIterator";
+import birthDaySearcher from "./service/birthDaysSearcher";
 import botController from "./plugin/bot-controller";
 
 const fastify: FastifyBotControllerInterface = Fastify({logger: true})
@@ -29,32 +30,11 @@ const start = async () => {
 
     let reqOptions = {
         method: 'getUpdates',
-        params: {timeout: 5, offset: 1}
+        params: {timeout: 15, offset: 1}
     }
+    requestIterator(reqOptions, fastify)
+    birthDaySearcher(fastify)
 
-    let requestIterator = async (options) => {
-        let resp : TelegramResponseBody;   
-        try {
-            resp = await telegramFetch(options)
-            if (resp.ok && resp.result && resp.result.length) {
-                await fastify.bot(resp.result)
-            }
-        } catch (err) {
-            console.error(err);
-        } 
-        
-        let { result } = resp;
-        let lastMessage : TelegramMessage 
-        if (result && result.length) {         
-           lastMessage = result.pop()  
-           lastMessage.update_id = lastMessage.update_id + 1
-        } else {
-            lastMessage = { update_id: options.params.offset } 
-        }        
-        reqOptions.params.offset = lastMessage.update_id   
-        return await requestIterator(reqOptions)
-    }
-    await requestIterator(reqOptions)
 }
 
 start()
