@@ -33,12 +33,12 @@ async function botControllerPlugin(fastify: FastifyORMInterface, options: Telegr
         const birthdayRepository = await fastify.orm.getRepository(Birthday);
 
         for (const item of body) {
+            console.log('item', item)
             let telegramUser = item.message.from
-            const user = await userRepository.findOne({telegramId: telegramUser.id});
+            let user = await userRepository.findOne({telegramId: telegramUser.id});
             if (!user) {
                 telegramUser = await saveUser(fastify, telegramUser)
             }
-            console.log(item)
             let massage = item.message.text.split(' ')
             let route = massage.shift()
 
@@ -71,9 +71,8 @@ async function botControllerPlugin(fastify: FastifyORMInterface, options: Telegr
                     }
                     await telegramFetch({method: "sendMessage", params})
                 }
-                if (massage[0] && Number(massage[0]).constructor === Number) {
-                    console.log('get 1')
-                }
+                // if (massage[0] && Number(massage[0]).constructor === Number) {
+                // }
             }
 
             if (route === '/delete') {
