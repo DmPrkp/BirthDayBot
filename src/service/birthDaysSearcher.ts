@@ -21,29 +21,42 @@ let birthDaysSearcher = async (fastify : FastifyORMInterface) => {
 
     if (birthdays.length) {
 
-
-        let names = [];
-        let initialUser = birthdays[0].user
-        console.log('birthdays', birthdays.length, initialUser)
-
+        let users = {}
         for (const birthday of birthdays) {
-            let { name, user } = birthday
-            if (user.id === initialUser.id ) {
-                names.push(name)
-            } else {
-                let text = names.join('\n')
-                text = (user.language_code === 'ru')
-                    ? 'Сегодня День Рожденье: \n' + text
-                    : 'Today birthday of: \n' + text
-                let params = {
-                    chat_id: user.telegramId,
-                    text
-                }
-                await telegramFetch({method: "sendMessage", params})
-                names = []
+            let prevIterationBirthdays = users[birthday.user.id] ? users[birthday.user.id].birthdays : []
+            users[birthday.user.id] = {
+                telegramId: birthday.user.telegramId,
+                language_code: birthday.user.language_code,
+                birthdays: [...prevIterationBirthdays, birthday.name]
             }
-
         }
+
+        for (const user in users) {
+            let text = users[user].birthdays.join('\n')
+            text = (users[user].language_code === 'ru')
+                ? 'Сегодня День Рожденье: \n' + text
+                : 'Today birthday of: \n' + text
+            let params = {
+                chat_id: users[user].telegramId,
+                text
+            }
+            await telegramFetch({method: "sendMessage", params})
+        }
+
+        // let item = {
+        //     id: birthdays[0].id,
+        //     birthdays: [birthdays[0].name]
+        // }
+
+        // for (const birthday of birthdays) {
+        //     let { name, user } = birthday
+        //
+        //     if (user.id === item.id ) {
+        //         names.push(name)
+        //     } else {
+
+        //     }
+        // }
 
     }
 

@@ -15,6 +15,11 @@ export class User {
     })
     last_name: string;
 
+    @Column({
+        nullable: true,
+    })
+    username: string;
+
     @Column()
     language_code: string;
 

@@ -32,9 +32,9 @@ const start = async () => {
         method: 'getUpdates',
         params: {timeout: 15, offset: 1}
     }
-    requestIterator(reqOptions, fastify)
+    // requestIterator(reqOptions, fastify)
     birthDaySearcher(fastify)
-
+    setInterval(() => birthDaySearcher(fastify), 1000 * 60 * 60 * 24)
 }
 
 start()
