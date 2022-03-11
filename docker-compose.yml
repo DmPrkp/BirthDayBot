@@ -1,19 +1,6 @@
 version: '3.8'
 
 services:
-  bot-db:
-    image: postgres:14.1-alpine
-    container_name: pgdb-bot
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: bot
-      POSTGRES_DB: bot2
-      PGDATA: /var/lib/postgresql/data/pgdata
-    ports:
-      - 5432:5432
-    volumes:
-      - ../fasti-db:/var/lib/postgresql/data/pgdata
-
 #  web:
 #   container_name: web-server
 #   build: .
