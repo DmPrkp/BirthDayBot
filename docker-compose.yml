@@ -1,14 +1,18 @@
 version: '3.8'
 
+networks:
+  bot_network:
+    name: bot_network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+          gateway: 172.16.238.3
+
 services:
-#  web:
-#   container_name: web-server
-#   build: .
-#   depends_on:
-#     - bot-db
-#   environment:
-#     PGHOST_DB: bot-db
-#   ports:
-#     - 3000:3000
-#   volumes:
-#   - ./:/usr/src/app
+ web:
+  container_name: web-server
+  build: .
+  ports:
+    - 3000:3000

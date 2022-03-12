@@ -1,4 +1,3 @@
-import { FastifyInstance } from 'fastify'
 import { TelegramResultArray } from './telegramPlugin'
 import {FastifyORMInterface} from './typeOrmPlugin'
 
