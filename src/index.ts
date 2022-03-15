@@ -29,7 +29,7 @@ if (process.env.DB_USER && process.env.PASSWORD && process.env.ROOT_HOST) {
         }
         requestIterator(reqOptions, fastify)
         birthDaySearcher(fastify)
-        setInterval(() => birthDaySearcher(fastify), 1000 * 60 * 60 * 24)
+        setInterval(() => birthDaySearcher(fastify), 1000 * 60 * 60 * 12)
     }
 
     start()
