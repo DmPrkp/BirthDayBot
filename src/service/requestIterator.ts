@@ -13,7 +13,7 @@ let requestIterator = async (options, fastify) => {
         console.error(err);
     }
 
-    let { result } = resp;
+    let { result } = resp || {};
     let lastMessage : TelegramMessage
     if (result && result.length) {
         lastMessage = result.pop()
