@@ -6,7 +6,7 @@ let requestIterator = async (options, fastify) => {
     let resp : TelegramResponseBody;
     try {
         resp = await telegramFetch(options)
-        if (resp.ok && resp.result && resp.result.length) {
+        if (resp?.ok && resp?.result && resp?.result?.length) {
             await fastify.bot(resp.result)
         }
     } catch (err) {
