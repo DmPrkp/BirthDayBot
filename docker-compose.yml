@@ -14,14 +14,12 @@ services:
     volumes:
       - ../fasti-db:/var/lib/postgresql/data/pgdata
 
-#  web:
-#   container_name: web-server
-#   build: .
-#   depends_on:
-#     - bot-db
-#   environment:
-#     PGHOST_DB: bot-db
-#   ports:
-#     - 3000:3000
-#   volumes:
-#   - ./:/usr/src/app
+# networks:
+#   indins_network:
+#     name: ${PROJECT_NAME}_network
+#     driver: bridge
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 172.16.238.0/24
+#           gateway: 172.16.238.3
