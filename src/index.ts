@@ -14,15 +14,8 @@ if (process.env.DB_USER && process.env.PASSWORD && process.env.ROOT_HOST) {
     fastify.register(botController)
 
     const start = async () => {
-
-        try {
-            await fastify.listen(3000)
-
-        } catch (err) {
-            fastify.log.error(err)
-            process.exit(1)
-        }
-
+        try { await fastify.listen(3000) } 
+        catch (err) { fastify.log.error(err); process.exit(1) }
         let reqOptions = {
             method: 'getUpdates',
             params: {timeout: 15, offset: 1}
