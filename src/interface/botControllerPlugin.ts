@@ -1,6 +1,6 @@
-import { FastifyInstance } from 'fastify'
 import { TelegramResultArray } from './telegramPlugin'
+import {FastifyORMInterface} from './typeOrmPlugin'
 
-export interface FastifyBotControllerInterface extends FastifyInstance {
+export interface FastifyBotControllerInterface extends FastifyORMInterface {
     bot?: (body:TelegramResultArray)=>{};
 }

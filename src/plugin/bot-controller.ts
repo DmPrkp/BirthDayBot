@@ -1,29 +1,11 @@
 import fastifyPlugin from "fastify-plugin";
-import { FastifyORMInterface, birthDayInterface } from '../interface/typeOrmPlugin'
-import { TelegramResultArray, FromObject }from '../interface/telegramPlugin'
+import { FastifyORMInterface } from '../interface/typeOrmPlugin'
+import { TelegramResultArray }from '../interface/telegramPlugin'
 import { Birthday } from "../entity/Birthday";
 import { User } from "../entity/User";
-import telegramFetch from "../services/telegram-fetch";
-
-function newEntityCreator(entity, val) {
-    for (const key of Object.keys(val)) {
-        (key === 'id') ? entity.telegramId = val[key] : entity[key] = val[key];
-    }
-    return entity
-}
-
-async function saveUser(fastify: FastifyORMInterface, user: FromObject) {
-    let newUser = new User();
-    newUser = newEntityCreator(newUser, user)
-    await fastify.orm.manager.save(newUser);
-    return newUser
-}
-
-async function saveBirthDay(fastify: FastifyORMInterface, birthDay: birthDayInterface) {
-    let newBirthday = new Birthday();
-    newBirthday = newEntityCreator(newBirthday, birthDay)
-    await fastify.orm.manager.save(newBirthday);
-}
+import telegramFetch from "../helpers/telegram-fetch";
+import saveUser from "../model/user"
+import saveBirthDay from "../model/birthday"
 
 async function botControllerPlugin(fastify: FastifyORMInterface, options: TelegramResultArray, done: any) {
 
@@ -32,19 +14,27 @@ async function botControllerPlugin(fastify: FastifyORMInterface, options: Telegr
         const userRepository = await fastify.orm.getRepository(User);
         const birthdayRepository = await fastify.orm.getRepository(Birthday);
 
-        for (const item of body) {
+        for (const item of body) {       
+            
+            if (!item.message || !item.message.text) continue
             let telegramUser = item.message.from
-            const user = await userRepository.findOne({telegramId: telegramUser.id});
-            if (!user) {
-                telegramUser = await saveUser(fastify, telegramUser)
+            let user = null;
+            try {
+                user = await userRepository.findOne({telegramId: telegramUser.id});
+                if (!user) {
+                    user = await saveUser(fastify, telegramUser)
+                }
+            } catch {
+                continue
             }
-            console.log(item)
+
+            
             let massage = item.message.text.split(' ')
             let route = massage.shift()
 
             if (route === '/start') {
                 let params = {
-                    chat_id: 1062015030,
+                    chat_id: user.telegramId,
                     text: 'initial options'
                 }
                 await telegramFetch({method: "sendMessage", params})
@@ -59,20 +49,25 @@ async function botControllerPlugin(fastify: FastifyORMInterface, options: Telegr
                     name: massage.join(' '),
                     status: 'not congratulate'
                 }
-                await saveBirthDay(fastify, birthday)
+                let resp = await saveBirthDay(fastify, birthday)
+        
+                if (resp) {
+                    let params = {
+                        chat_id: user.telegramId,
+                        text: `Birthday ${resp} successfully saved!`
+                    }
+                    await telegramFetch({method: "sendMessage", params})  
+                }
             }
 
             if (route === '/get') {
                 if (massage[0] === 'all') {                 
                     const { birthdays } = await userRepository.findOne(user.id, {relations: ["birthdays"]});
                     let params = {
-                        chat_id: 1062015030,
+                        chat_id: user.telegramId,
                         text: (birthdays.map(el => `${el.id} ${el.name} ${el.day}.${el.month}`)).join('\n')
                     }
                     await telegramFetch({method: "sendMessage", params})
-                }
-                if (massage[0] && Number(massage[0]).constructor === Number) {
-                    console.log('get 1')
                 }
             }
 
@@ -81,7 +76,7 @@ async function botControllerPlugin(fastify: FastifyORMInterface, options: Telegr
                     try {
                         birthdayRepository.delete(Number(massage[0]))
                         let params = {
-                            chat_id: 1062015030,
+                            chat_id: user.telegramId,
                             text: `item ${massage[0]} is deleted`
                         }
                         await telegramFetch({method: "sendMessage", params})  

@@ -1,5 +1,5 @@
 import { TelegramResponseBody, TelegramOptions } from "../interface/telegramPlugin";
-import httpFetchRequest from "./helpers";
+import httpFetchRequest from "./httpRequest";
 
 async function telegramFetch(options: TelegramOptions) {
     let token = process.env.TELEGRAM_TOKEN
