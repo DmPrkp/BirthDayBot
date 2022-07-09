@@ -26,11 +26,11 @@ const dbSettings : MysqlConnectionOptions = {
 
 async function typeormConnector (fastify: FastifyORMInterface, options: MysqlConnectionOptions) {
 
-    try {
-
-        console.log(options);
+    try { 
         
         let dbOptions = (options && options.password) ? options : dbSettings
+
+        console.log(dbOptions);
 
         let connection : Connection = await createConnection(dbOptions)
         
